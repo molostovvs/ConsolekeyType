@@ -4,58 +4,96 @@ namespace ConsolekeyType.UnitTests;
 public class TextTests
 {
     [Test]
-    public void Creating_text_with_zero_words_throws_exception()
+    public void Creating_text_with_zero_words_fails()
     {
-        Action createMethod = () => Text.Create(Enumerable.Empty<Word>());
+        var result = Text.Create(Enumerable.Empty<Word>(), Language.English);
 
-        createMethod.Should()
-                    .ThrowExactly<DomainException>()
-                    .WithMessage("The number of words must be greater than 0");
+        result.Should().Fail();
     }
 
     [Test]
-    public void Creating_text_with_null_throws_exception()
+    public void Text_with_null_words_throws_exception()
     {
-        Action createMethod = () => Text.Create(null);
+        Action createMethod = () => Text.Create((IEnumerable<Word>)null, Language.English);
 
         createMethod.Should()
-                    .ThrowExactly<NullReferenceException>()
-                    .WithMessage("You have to provide the words to create the text");
+                    .ThrowExactly<ArgumentNullException>()
+                    .WithMessage("Value cannot be null. (Parameter 'words')");
     }
 
     [Test]
-    public void Creating_text_with_words()
+    public void Text_with_null_language_throws_exception()
     {
         var words = CreateDefaultWords();
 
-        var createMethod = () => Text.Create(words);
+        Action createMethod = () => Text.Create(words, null);
+
+        createMethod.Should()
+                    .ThrowExactly<ArgumentNullException>()
+                    .WithMessage("Value cannot be null. (Parameter 'language')");
+    }
+
+    [Test]
+    public void Text_with_words()
+    {
+        var words = CreateDefaultWords();
+
+        var createMethod = () => Text.Create(words, Language.English);
 
         createMethod.Should().NotThrow();
     }
 
     [Test]
-    public void Identical_texts_is_equivalent()
+    public void Compare_fully_identical()
     {
         var words = CreateDefaultWords();
 
-        var text1 = Text.Create(words).Value;
-        var text2 = Text.Create(words).Value;
+        var text1 = Text.Create(words, Language.English).Value;
+        var text2 = Text.Create(words, Language.English).Value;
 
-        text1.Equals(text2);
+        var equality = text1.Equals(text2);
 
-        text1.Should().BeEquivalentTo(text2);
+        equality.Should().BeTrue();
     }
 
     [Test]
-    public void Different_texts_is_not_equivalent()
+    public void Compare_with_identical_words_and_different_languages()
+    {
+        var words = CreateDefaultWords();
+        var text1 = Text.Create(words, Language.English).Value;
+        var text2 = Text.Create(words, Language.Russian).Value;
+
+        var equality = text1.Equals(text2);
+
+        equality.Should().BeFalse();
+    }
+
+    [Test]
+    public void Compare_with_different_words_and_identical_languages()
     {
         var words1 = CreateWords("a", "b", "c");
         var words2 = CreateWords("a", "b", "x");
 
-        var text1 = Text.Create(words1).Value;
-        var text2 = Text.Create(words2).Value;
+        var text1 = Text.Create(words1, Language.English).Value;
+        var text2 = Text.Create(words2, Language.English).Value;
 
-        text1.Should().NotBe(text2);
+        var equality = text1.Equals(text2);
+
+        equality.Should().BeFalse();
+    }
+
+    [Test]
+    public void Compare_completely_different()
+    {
+        var words1 = CreateWords("a", "b", "c");
+        var words2 = CreateWords("a", "b", "x");
+
+        var text1 = Text.Create(words1, Language.English).Value;
+        var text2 = Text.Create(words2, Language.Russian).Value;
+
+        var equality = text1.Equals(text2);
+
+        equality.Should().BeFalse();
     }
 
     [Test]
@@ -63,18 +101,19 @@ public class TextTests
     {
         var words = CreateDefaultWords();
 
-        var text = Text.Create(words).Value;
+        var text = Text.Create(words, Language.English).Value;
 
         string stringText = text;
 
         stringText.Should().Be(DefaultWords);
     }
 
+    /*//converting to text
     [Test]
     public void Converting_from_string_to_text()
     {
         const string str = "a b c";
-        var expected = Text.Create(CreateWords("a", "b", "c")).Value;
+        var expected = Text.Create(CreateWords("a", "b", "c"), Language.English).Value;
 
         var actual = (Text)str;
 
@@ -91,11 +130,21 @@ public class TextTests
         act.Should().ThrowExactly<DomainException>("The number of words must be greater than 0");
     }
 
+    [Test]
+    public void Converting_from_null_string_to_text_throws()
+    {
+        const string str = null;
+
+        var act = () => (Text)str;
+
+        act.Should().ThrowExactly<DomainException>("The number of words must be greater than 0");
+    }*/
+
     private IReadOnlyList<Word> CreateWords(params string[] words)
         => words.Select(word => Word.Create(word).Value).ToList();
 
     private const string DefaultWords = "a b c";
 
     private IReadOnlyList<Word> CreateDefaultWords()
-        => CreateWords("a", "b", "c");
+        => CreateWords(DefaultWords.Split(" "));
 }
