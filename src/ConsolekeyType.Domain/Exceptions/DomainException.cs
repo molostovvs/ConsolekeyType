@@ -1,8 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace ConsolekeyType.Domain.Exceptions;
 
 /// <summary>
 /// Exception type for Domain exceptions
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class DomainException : Exception
 {
     public DomainException()
