@@ -108,6 +108,16 @@ public class TextTests
         stringText.Should().Be(DefaultWords);
     }
 
+    [Test]
+    public void ToString_method()
+    {
+        var result = Text.Create(CreateDefaultWords(), Language.English);
+
+        var str = result.Value.ToString();
+
+        str.Should().BeEquivalentTo(DefaultWords);
+    }
+
     /*//converting to text
     [Test]
     public void Converting_from_string_to_text()

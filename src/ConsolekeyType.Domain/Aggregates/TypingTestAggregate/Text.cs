@@ -6,7 +6,7 @@ public class Text : ValueObject
 {
     public ImmutableList<Word> Value { get; }
 
-    public int Length => Value.Count;
+    public int WordsCount => Value.Count;
 
     public Language Language { get; }
 
@@ -37,6 +37,9 @@ public class Text : ValueObject
 
     public static implicit operator string(Text text)
         => string.Join(" ", text.Value.Select(w => w.Value));
+
+    public override string ToString()
+        => string.Join(" ", Value.Select(w => w.Value));
 
     /*public static explicit operator Text(string text)
     {
