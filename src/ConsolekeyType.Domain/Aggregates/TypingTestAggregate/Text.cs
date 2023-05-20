@@ -4,15 +4,15 @@ namespace ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
 
 public class Text : ValueObject
 {
-    public ImmutableList<Word> Value { get; }
+    public ImmutableList<Word> Words { get; }
 
-    public int WordsCount => Value.Count;
+    public int WordsCount => Words.Count;
 
     public Language Language { get; }
 
     private Text(List<Word> words, Language language)
     {
-        Value = words.ToImmutableList();
+        Words = words.ToImmutableList();
         Language = language;
     }
 
@@ -36,10 +36,10 @@ public class Text : ValueObject
         => throw new NotImplementedException();
 
     public static implicit operator string(Text text)
-        => string.Join(" ", text.Value.Select(w => w.Value));
+        => string.Join(" ", text.Words.Select(w => w.Value));
 
     public override string ToString()
-        => string.Join(" ", Value.Select(w => w.Value));
+        => string.Join(" ", Words.Select(w => w.Value));
 
     /*public static explicit operator Text(string text)
     {
@@ -56,7 +56,7 @@ public class Text : ValueObject
     {
         yield return Language;
 
-        foreach (var word in Value)
+        foreach (var word in Words)
             yield return word;
     }
 }
