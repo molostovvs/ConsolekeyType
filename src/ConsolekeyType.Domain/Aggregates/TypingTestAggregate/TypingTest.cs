@@ -9,11 +9,11 @@ public class TypingTest : Entity, IAggregateRoot
     public DateTime EndTime { get; private set; }
     public Maybe<TimeSpan> Duration => IsCompleted ? EndTime - StartTime : Maybe<TimeSpan>.None;
 
-    public bool IsStarted { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsCompleted { get; private set; }
 
     /*//CPM and WPM
+    //TODO: implement cpm and wpm
     private float _cpm;
     private float _wpm;
 
@@ -29,6 +29,7 @@ public class TypingTest : Entity, IAggregateRoot
     {
         Text = text;
         _text = text.ToString().ToCharArray();
+        _enteredChars = new Stack<char>();
         TotalCharacters = Text.Words.Sum(w => w.Value.Length);
     }
 
@@ -40,42 +41,49 @@ public class TypingTest : Entity, IAggregateRoot
         return Result.Success(new TypingTest(text.Value));
     }
 
-    public void Start(DateTime startTime)
+    public Result Start(DateTime startTime)
     {
         if (IsRunning || IsCompleted)
-            throw new InvalidOperationException("The test is already started");
+            return Result.Failure("The test is already started");
 
         StartTime = startTime;
-        IsStarted = true;
+        IsRunning = true;
+
+        return Result.Success(startTime);
     }
 
-    public void End(DateTime endTime)
+    public Result End(DateTime endTime)
     {
         //TODO: Add wpm and cpm calculation
 
         if (!IsRunning || IsCompleted)
-            throw new InvalidOperationException("The test cannot be completed");
+            return Result.Failure("The test cannot be completed");
 
         EndTime = endTime;
         IsCompleted = true;
         IsRunning = false;
+
+        return Result.Success(endTime);
     }
 
-    public void EnterChar(char @char)
+    public Result EnterChar(char @char)
     {
-        //TODO: maybe just ignore char instead of throwing ex?
-        if (IsCompleted)
-            throw new InvalidOperationException("Test is completed");
+        if (!IsRunning)
+            return Result.Failure("Test is not in running phase");
 
         _enteredChars.Push(@char);
+
+        return Result.Success(@char);
     }
 
-    public void DeleteLastChar()
+    public Result<char> DeleteLastChar()
     {
-        //TODO: maybe just ignore operation instead of throwing ex?
-        if (IsCompleted)
-            throw new InvalidOperationException("Test is completed");
+        if (!IsRunning)
+            return Result.Failure<char>("Test is not in running phase");
 
-        _enteredChars.Pop();
+        if (!_enteredChars.TryPop(out var @char))
+            return Result.Failure<char>("There is no entered chars yet");
+
+        return Result.Success(@char);
     }
 }
