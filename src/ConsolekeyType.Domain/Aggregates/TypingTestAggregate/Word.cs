@@ -32,7 +32,7 @@ public class Word : ValueObject
         var result = Create(str);
 
         if (result.IsFailure)
-            throw new DomainException($"Can not convert provided string: {str} to Word");
+            throw new DomainException($"Can not convert provided string: {str} to {nameof(Word)}");
 
         return result.Value;
     }
