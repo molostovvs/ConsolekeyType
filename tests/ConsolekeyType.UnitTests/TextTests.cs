@@ -4,6 +4,15 @@ namespace ConsolekeyType.UnitTests;
 public class TextTests
 {
     [Test]
+    public void Words_count()
+    {
+        var words = CreateDefaultWords();
+        var text = Text.Create(words, Language.English).Value;
+
+        text.WordsCount.Should().Be(_defaultWords.Split(" ").Length);
+    }
+
+    [Test]
     public void Creating_text_with_zero_words_fails()
     {
         var result = Text.Create(Enumerable.Empty<Word>(), Language.English);
@@ -12,25 +21,31 @@ public class TextTests
     }
 
     [Test]
-    public void Text_with_null_words_throws_exception()
+    public void Create_text_with_null_enumerable_is_invalid()
     {
-        Action createMethod = () => Text.Create((IEnumerable<Word>)null, Language.English);
+        var res = Text.Create((IEnumerable<Word>)null, Language.English);
 
-        createMethod.Should()
-                    .ThrowExactly<ArgumentNullException>()
-                    .WithMessage("Value cannot be null. (Parameter 'words')");
+        res.Should().Fail();
     }
 
     [Test]
-    public void Text_with_null_language_throws_exception()
+    public void Create_text_with__words_is_invalid()
+    {
+        var words = new List<Word> { null, null };
+
+        var res = Text.Create(words, Language.English);
+
+        res.Should().Fail();
+    }
+
+    [Test]
+    public void Create_text_with_null_language_is_invalid()
     {
         var words = CreateDefaultWords();
 
-        Action createMethod = () => Text.Create(words, null);
+        var res = Text.Create(words, null);
 
-        createMethod.Should()
-                    .ThrowExactly<ArgumentNullException>()
-                    .WithMessage("Value cannot be null. (Parameter 'language')");
+        res.Should().Fail();
     }
 
     [Test]
@@ -41,6 +56,46 @@ public class TextTests
         var createMethod = () => Text.Create(words, Language.English);
 
         createMethod.Should().NotThrow();
+    }
+
+    [Test]
+    public void Create_from_valid_string_is_valid()
+    {
+        var text = "ponchi the dog";
+
+        var res = Text.Create(text, Language.English);
+
+        res.Should().Succeed();
+    }
+
+    [Test]
+    public void Create_from_empty_string_is_invalid()
+    {
+        var text = string.Empty;
+
+        var res = Text.Create(text, Language.English);
+
+        res.Should().Fail();
+    }
+
+    [Test]
+    public void Create_from_null_string_is_invalid()
+    {
+        var text = (string)null;
+
+        var res = Text.Create(text, Language.English);
+
+        res.Should().Fail();
+    }
+
+    [Test]
+    public void Create_from_long_word_is_invalid()
+    {
+        var text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; // text.Length = 50
+
+        var res = Text.Create(text, Language.English);
+
+        res.Should().Fail();
     }
 
     [Test]
@@ -105,7 +160,7 @@ public class TextTests
 
         string stringText = text;
 
-        stringText.Should().Be(DefaultWords);
+        stringText.Should().Be(_defaultWords);
     }
 
     [Test]
@@ -115,7 +170,7 @@ public class TextTests
 
         var str = result.Value.ToString();
 
-        str.Should().BeEquivalentTo(DefaultWords);
+        str.Should().BeEquivalentTo(_defaultWords);
     }
 
     /*//converting to text
@@ -153,8 +208,8 @@ public class TextTests
     private IReadOnlyList<Word> CreateWords(params string[] words)
         => words.Select(word => Word.Create(word).Value).ToList();
 
-    private const string DefaultWords = "a b c";
+    private const string _defaultWords = "a b c";
 
     private IReadOnlyList<Word> CreateDefaultWords()
-        => CreateWords(DefaultWords.Split(" "));
+        => CreateWords(_defaultWords.Split(" "));
 }
