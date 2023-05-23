@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolekeyType.UI", "src\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolekeyType.Infrastructure", "src\ConsolekeyType.Infrastructure\ConsolekeyType.Infrastructure.csproj", "{4788A970-34F0-4C9C-B287-1ADC3AE15F9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolekeyType.IntegrationTests", "tests\ConsolekeyType.IntegrationTests\ConsolekeyType.IntegrationTests.csproj", "{FE2CAC2C-0285-4F50-8EB6-315447F8686C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,11 +36,16 @@ Global
 		{4788A970-34F0-4C9C-B287-1ADC3AE15F9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4788A970-34F0-4C9C-B287-1ADC3AE15F9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4788A970-34F0-4C9C-B287-1ADC3AE15F9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE2CAC2C-0285-4F50-8EB6-315447F8686C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE2CAC2C-0285-4F50-8EB6-315447F8686C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE2CAC2C-0285-4F50-8EB6-315447F8686C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE2CAC2C-0285-4F50-8EB6-315447F8686C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C18FE1A7-23FA-4022-8931-7D49F5CE3105} = {06D66FF8-BE50-41F3-9188-5C91D16E5758}
 		{907B160B-BA21-4808-BEE9-CEB93BEB96A7} = {4B7FDB7A-131C-4316-A8F8-876965AD2B13}
 		{01FAC7EE-CA36-48D5-A083-4D359668ECE7} = {06D66FF8-BE50-41F3-9188-5C91D16E5758}
 		{4788A970-34F0-4C9C-B287-1ADC3AE15F9D} = {06D66FF8-BE50-41F3-9188-5C91D16E5758}
+		{FE2CAC2C-0285-4F50-8EB6-315447F8686C} = {4B7FDB7A-131C-4316-A8F8-876965AD2B13}
 	EndGlobalSection
 EndGlobal
