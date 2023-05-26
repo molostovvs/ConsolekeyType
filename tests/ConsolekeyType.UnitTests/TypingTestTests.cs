@@ -9,7 +9,7 @@ public class TypingTestTests
     private readonly TimeSpan _duration = TimeSpan.FromMilliseconds(390);
 
     [Test]
-    public void Create_is_valid()
+    public void Create()
     {
         var text = CreateDefaultText();
 
@@ -19,7 +19,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Create_with_null_is_invalid()
+    public void Create_with_null()
     {
         var res = TypingTest.Create(null);
 
@@ -27,7 +27,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Total_characters_is_valid()
+    public void Total_characters()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -35,7 +35,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Start_is_valid()
+    public void Start()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -46,7 +46,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void End_is_valid()
+    public void End()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -58,7 +58,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Start_when_running_is_invalid()
+    public void Start_when_running()
     {
         var text = CreateDefaultText();
         var typingTest = TypingTest.Create(text).Value;
@@ -72,7 +72,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Start_when_completed_is_invalid()
+    public void Start_when_completed()
     {
         var text = CreateDefaultText();
         var typingTest = TypingTest.Create(text).Value;
@@ -87,7 +87,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void End_when_not_started_is_invalid()
+    public void End_when_not_started()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -99,7 +99,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void End_when_completed_is_invalid()
+    public void End_when_completed()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -110,7 +110,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Duration_is_valid()
+    public void Duration()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -121,7 +121,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Duration_when_not_started_is_invalid()
+    public void Duration_when_not_started()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -129,7 +129,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Duration_when_not_completed_is_invalid()
+    public void Duration_when_not_completed()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -139,7 +139,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Entering_char_is_valid()
+    public void Entering_char()
     {
         var typingTest = CreateDefaultTypingTest();
         typingTest.Start(_startTime);
@@ -150,7 +150,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Entering_char_when_not_started_is_invalid()
+    public void Entering_char_when_not_started()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -160,7 +160,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Entering_char_when_completed_is_not_valid()
+    public void Entering_char_when_completed()
     {
         var typingTest = CreateDefaultTypingTest();
         typingTest.Start(_startTime);
@@ -172,7 +172,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Deleting_last_char_is_valid()
+    public void Deleting_last_char()
     {
         var typingTest = CreateDefaultTypingTest();
         typingTest.Start(_startTime);
@@ -185,7 +185,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Deleting_last_char_when_not_started_is_invalid()
+    public void Deleting_last_char_when_not_started()
     {
         var typingTest = CreateDefaultTypingTest();
 
@@ -195,7 +195,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Deleting_last_char_when_no_chars_entered_is_invalid()
+    public void Deleting_last_char_when_no_chars_entered()
     {
         var typingTest = CreateDefaultTypingTest();
         typingTest.Start(_startTime);
@@ -206,7 +206,7 @@ public class TypingTestTests
     }
 
     [Test]
-    public void Deleting_last_char_when_completed_is_invalid()
+    public void Deleting_last_char_when_completed()
     {
         var typingTest = CreateDefaultTypingTest();
         typingTest.Start(_startTime);
