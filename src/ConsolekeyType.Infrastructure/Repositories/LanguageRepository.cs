@@ -1,9 +1,5 @@
-using System.Data;
-using System.Data.Common;
 using ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
-using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Options;
-using System.Data.SQLite;
 using System.Reflection;
 
 namespace ConsolekeyType.Infrastructure.Repositories;
@@ -17,35 +13,47 @@ public class LanguageRepository : ILanguageRepository
 
     public Maybe<Language> GetById(long id)
     {
-        var result = Maybe<Language>.None;
+        using var connection = new SQLiteConnection(_connectionString);
 
-        using (var connection = new SQLiteConnection(_connectionString))
-        {
-            var command = connection.CreateCommand();
-            command.CommandText = @"
+        using var command = new SQLiteCommand(connection);
+        command.CommandText = @"
 select
     id,
     name
 from
     language
 where id == @id";
+        command.Parameters.AddWithValue("@id", id);
 
-            command.Parameters.AddWithValue("@id", id);
+        connection.Open();
 
-            connection.Open();
-            using (var reader = command.ExecuteReader())
-            {
-                reader.Read();
-                Map(reader, ref result);
-            }
-
-            connection.Close();
-        }
-
-        return result;
+        using var reader = command.ExecuteReader();
+        reader.Read();
+        return Map(reader);
     }
 
-    private void Map(DbDataReader reader, ref Maybe<Language> result)
+    public Maybe<Language> GetByName(string name)
+    {
+        using var connection = new SQLiteConnection(_connectionString);
+
+        using var command = new SQLiteCommand(connection);
+        command.CommandText = @"
+select
+    id,
+    name
+from
+    language
+where name == @name";
+        command.Parameters.AddWithValue("@name", name);
+
+        connection.Open();
+
+        using var reader = command.ExecuteReader();
+        reader.Read();
+        return Map(reader);
+    }
+
+    private Maybe<Language> Map(IDataRecord reader)
     {
         var ctor = typeof(Language).GetConstructor(
             BindingFlags.Instance | BindingFlags.NonPublic,
@@ -55,36 +63,6 @@ where id == @id";
             null
         );
 
-        result = (Language)ctor.Invoke(new object[] { reader["id"], reader["name"] });
-    }
-
-    public Maybe<Language> GetByName(string name)
-    {
-        var result = Maybe<Language>.None;
-
-        using (var connection = new SQLiteConnection(_connectionString))
-        {
-            var command = connection.CreateCommand();
-            command.CommandText = @"
-select
-    id,
-    name
-from
-    language
-where name == @name";
-
-            command.Parameters.AddWithValue("@name", name);
-
-            connection.Open();
-            using (var reader = command.ExecuteReader())
-            {
-                reader.Read();
-                Map(reader, ref result);
-            }
-
-            connection.Close();
-        }
-
-        return result;
+        return (Language)ctor.Invoke(new[] { reader["id"], reader["name"] });
     }
 }
