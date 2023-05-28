@@ -1,5 +1,4 @@
 using ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
-using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Options;
 
 namespace ConsolekeyType.Infrastructure;
