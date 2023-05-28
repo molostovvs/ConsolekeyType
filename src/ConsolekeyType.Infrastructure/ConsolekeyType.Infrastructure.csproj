@@ -12,6 +12,14 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+      <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
     </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Migrations\*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 
 </Project>

@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\ConsolekeyType.Domain\ConsolekeyType.Domain.csproj" />
+      <ProjectReference Include="..\..\src\ConsolekeyType.Infrastructure\ConsolekeyType.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
