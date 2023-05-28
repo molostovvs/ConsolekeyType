@@ -13,7 +13,7 @@ public class TextTests
     }
 
     [Test]
-    public void Creating_text_with_zero_words_fails()
+    public void Creating_text_with_zero_words()
     {
         var result = Text.Create(Enumerable.Empty<Word>(), Language.English);
 
@@ -21,7 +21,7 @@ public class TextTests
     }
 
     [Test]
-    public void Create_text_with_null_enumerable_is_invalid()
+    public void Create_text_with_null_enumerable()
     {
         var res = Text.Create((IEnumerable<Word>)null, Language.English);
 
@@ -29,7 +29,7 @@ public class TextTests
     }
 
     [Test]
-    public void Create_text_with__words_is_invalid()
+    public void Create_text_with__words()
     {
         var words = new List<Word> { null, null };
 
@@ -39,7 +39,7 @@ public class TextTests
     }
 
     [Test]
-    public void Create_text_with_null_language_is_invalid()
+    public void Create_text_with_null_language()
     {
         var words = CreateDefaultWords();
 
@@ -59,7 +59,7 @@ public class TextTests
     }
 
     [Test]
-    public void Create_from_valid_string_is_valid()
+    public void Create_from_valid_string()
     {
         var text = "ponchi the dog";
 
@@ -69,7 +69,7 @@ public class TextTests
     }
 
     [Test]
-    public void Create_from_empty_string_is_invalid()
+    public void Create_from_empty_string()
     {
         var text = string.Empty;
 
@@ -79,7 +79,7 @@ public class TextTests
     }
 
     [Test]
-    public void Create_from_null_string_is_invalid()
+    public void Create_from_null_string()
     {
         var text = (string)null;
 
@@ -89,7 +89,7 @@ public class TextTests
     }
 
     [Test]
-    public void Create_from_long_word_is_invalid()
+    public void Create_from_long_word()
     {
         var text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; // text.Length = 50
 
