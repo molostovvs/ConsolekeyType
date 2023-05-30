@@ -3,6 +3,7 @@ namespace ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
 //TODO: allow interrupt TypingTest
 public class TypingTest : Entity, IAggregateRoot
 {
+    public sealed override long Id { get; protected set; }
     public Text Text { get; }
 
     public DateTime StartTime { get; private set; }
@@ -25,8 +26,9 @@ public class TypingTest : Entity, IAggregateRoot
 
     public int TotalCharacters { get; }
 
-    private TypingTest(Text text)
+    private TypingTest(Text text, long id = default)
     {
+        Id = id;
         Text = text;
         _text = text.ToString().ToCharArray();
         _enteredChars = new Stack<char>();
@@ -39,6 +41,17 @@ public class TypingTest : Entity, IAggregateRoot
             return Result.Failure<TypingTest>("You must provide the text");
 
         return Result.Success(new TypingTest(text.Value));
+    }
+
+    public static Result<TypingTest> Create(Maybe<Text> text, long id)
+    {
+        if (text.HasNoValue)
+            return Result.Failure<TypingTest>("You must provide the text");
+
+        if (id < 0)
+            return Result.Failure<TypingTest>("Id cannot be negative");
+
+        return Result.Success(new TypingTest(text.Value, id));
     }
 
     public Result Start(DateTime startTime)

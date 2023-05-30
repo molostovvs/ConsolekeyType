@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="global reset" type="DatabaseScript">
+    <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/GlobalReset.SQL" />
+    <script-mode>FILE</script-mode>
+    <data-source id="d784507c-75b4-4f03-b01a-c110570399c4" />
+    <method v="2" />
+  </configuration>
+</component>

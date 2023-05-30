@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="dev init" type="DatabaseScript">
+    <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305261744-CreateLanguage.SQL" />
+    <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305261746-InsertLanguages.SQL" />
+    <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305290837-CreateTypingTests.SQL" />
+    <script-mode>FILE</script-mode>
+    <data-source id="d784507c-75b4-4f03-b01a-c110570399c4" />
+    <method v="2" />
+  </configuration>
+</component>
