@@ -5,8 +5,8 @@ public class TypingTestTests
 {
     private const string _defaultStr = "ponchi the dog";
     private readonly DateTime _startTime = new DateTime(2020, 1, 1, 10, 0, 0, 50);
-    private readonly DateTime _endTime = new DateTime(2020, 1, 1, 10, 0, 0, 440);
-    private readonly TimeSpan _duration = TimeSpan.FromMilliseconds(390);
+    private readonly DateTime _endTime = new DateTime(2020, 1, 1, 10, 0, 2, 440);
+    private readonly TimeSpan _duration = TimeSpan.FromMilliseconds(2390);
 
     [Test]
     public void Create()

@@ -12,7 +12,7 @@ public class TypingTestTests
         "data source = test.db;version = 3;failifmissing = false";
 
     private readonly DateTime _startTime = new(2020, 1, 1, 10, 0, 0, 50);
-    private readonly DateTime _endTime = new(2020, 1, 1, 10, 0, 0, 440);
+    private readonly DateTime _endTime = new(2020, 1, 1, 10, 0, 2, 440);
 
     [SetUp]
     public void SetUp()
