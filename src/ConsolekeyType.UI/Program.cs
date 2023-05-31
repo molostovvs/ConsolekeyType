@@ -1,8 +1,7 @@
-//TODO: should this project be called Consolekey.Application instead of Consolekey.UI? If so, new project with actual UI should be introduced
-
 using Microsoft.Extensions.DependencyInjection;
 using ConsolekeyType.Infrastructure;
 using ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
+using ConsolekeyType.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 
 IConfiguration configuration =
@@ -29,4 +28,5 @@ static void ConfigureServices(IServiceCollection serviceCollection, IConfigurati
                      .Bind(configuration.GetSection(DatabaseSettings.ConfigKey));
 
     serviceCollection.AddScoped<ITypingTestRepository, TypingTestRepository>();
+    // serviceCollection.AddScoped<ILanguageRepository, LanguageRepository>();
 }
