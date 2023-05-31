@@ -19,15 +19,15 @@ public class TypingTestRepository : ITypingTestRepository
         using var command = new SQLiteCommand(connection);
         command.CommandText = @"
 insert into typing_tests(
-                        text, language_id, start_time, end_time, duration_ms
+                        text, language_id, start_time, end_time, duration
 )
-values (@text, @language_id, @start_time, @end_time, @duration_ms)
+values (@text, @language_id, @start_time, @end_time, @duration)
 ";
         command.Parameters.AddWithValue("@language_id", typingTest.Text.Language.Id);
         command.Parameters.AddWithValue("@text", typingTest.Text.ToString());
         command.Parameters.AddWithValue("@start_time", typingTest.StartTime);
         command.Parameters.AddWithValue("@end_time", typingTest.EndTime);
-        command.Parameters.AddWithValue("@duration_ms", typingTest.Duration.Value.Milliseconds);
+        command.Parameters.AddWithValue("@duration", typingTest.Duration.Value);
 
         connection.Open();
         var inserted = command.ExecuteNonQuery();
