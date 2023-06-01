@@ -3,8 +3,10 @@
     <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305261744-CreateLanguage.SQL" />
     <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305261746-InsertLanguages.SQL" />
     <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305290837-CreateTypingTests.SQL" />
+    <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305311404-CreateWords.SQL" />
+    <script-file value="$PROJECT_DIR$/src/ConsolekeyType.Infrastructure/Migrations/202305311405-InsertWords.SQL" />
     <script-mode>FILE</script-mode>
-    <data-source id="d784507c-75b4-4f03-b01a-c110570399c4" />
+    <data-source id="b8349f53-0944-438e-a141-63dc7e7dda18" />
     <method v="2" />
   </configuration>
 </component>
