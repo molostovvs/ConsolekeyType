@@ -1,4 +1,6 @@
+using System.ComponentModel.Design;
 using ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
+using CSharpFunctionalExtensions;
 
 namespace ConsolekeyType.Application;
 
@@ -6,18 +8,53 @@ public class TypingTestService : ITypingTestService
 {
     private readonly ITypingTestRepository _repository;
 
+    public TypingTest TypingTest { get; private set; }
+
     public TypingTestService(ITypingTestRepository repository)
         => _repository = repository;
 
-    public void StartTest()
-        => throw new NotImplementedException();
+    public void StartTest(Text text)
+    {
+        var (_, isFailure, typingTest) = TypingTest.Create(text);
+
+        if (isFailure)
+            throw new Exception(); //TODO: Specify exception (and check should we even throw here)
+
+        typingTest.Start(DateTime.Now);
+        TypingTest = typingTest;
+    }
+
+    //do we even need this?
+    public void AbortTest()
+    {
+        var (_, isFailure) = TypingTest.End(DateTime.Now);
+
+        if (isFailure)
+            throw new Exception(); //TODO: check previous todo
+    }
 
     public void EndTest()
-        => throw new NotImplementedException();
+    {
+        TypingTest.End(DateTime.Now);
+        var (_, isFailure) = _repository.Save(TypingTest);
 
-    public void EnterChar()
-        => throw new NotImplementedException();
+        if (isFailure)
+            throw new Exception(); //TODO: check previous todo
+    }
 
-    public void DeleteChar()
-        => throw new NotImplementedException();
+    public void EnterCharacter(char character)
+    {
+        var (_, isFailure, _) = TypingTest.EnterChar(character);
+
+        if (isFailure)
+            throw new Exception(); //TODO: check previous todo
+    }
+
+    public void DeleteCharacter()
+    {
+        var (_, isFailure, _) = TypingTest.DeleteLastChar();
+
+        if (isFailure)
+            throw new Exception(); //TODO: check previous todo
+    }
 }
