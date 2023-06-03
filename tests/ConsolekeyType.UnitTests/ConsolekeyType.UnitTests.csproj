@@ -19,9 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\ConsolekeyType.Domain\ConsolekeyType.Domain.csproj" />
-      <ProjectReference Include="..\..\src\ConsolekeyType.Infrastructure\ConsolekeyType.Infrastructure.csproj" />
-      <ProjectReference Include="..\..\src\ConsolekeyType.UI\ConsolekeyType.UI.csproj" />
+        <ProjectReference Include="..\..\src\ConsolekeyType.Domain\ConsolekeyType.Domain.csproj"/>
     </ItemGroup>
 
 </Project>
