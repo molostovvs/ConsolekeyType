@@ -1,32 +1,50 @@
+using ConsolekeyType.Application;
 using Microsoft.Extensions.DependencyInjection;
 using ConsolekeyType.Infrastructure;
 using ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
 using ConsolekeyType.Infrastructure.Repositories;
+using ConsolekeyType.UI;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
-IConfiguration configuration =
-    new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false).Build();
+var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false)
+                                       .AddJsonFile(
+                                            $"appsettings.{Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")}.json",
+                                            optional: true
+                                        )
+                                       .Build();
 
 var services = new ServiceCollection();
-ConfigureServices(services, configuration);
-var serviceProvider = services.BuildServiceProvider();
+ConfigureServices(services, config);
+var provider = services.BuildServiceProvider();
+
+var ui = new TypingTestUI(
+    provider.GetRequiredService<ITypingTestService>(),
+    provider.GetRequiredService<ITextService>()
+);
+
+provider.GetRequiredService<IDatabaseHandler>().Initialize();
 
 try
 {
-    // UI.Run();
+    ui.Run();
 }
-catch (Exception e)
+catch (Exception)
 {
-    // _Logger.Log(e);
-    //UI.ShowApology();
-    //UI.FailFast();
+    ui.ShowApology();
+    throw;
+    //ui.FailFast();
 }
 
-static void ConfigureServices(IServiceCollection serviceCollection, IConfiguration configuration)
+void ConfigureServices(IServiceCollection serviceCollection, IConfiguration configuration)
 {
     serviceCollection.AddOptions<DatabaseSettings>()
                      .Bind(configuration.GetSection(DatabaseSettings.ConfigKey));
 
     serviceCollection.AddScoped<ITypingTestRepository, TypingTestRepository>();
-    // serviceCollection.AddScoped<ILanguageRepository, LanguageRepository>();
+    serviceCollection.AddScoped<IWordRepository, WordRepository>();
+    serviceCollection.AddScoped<ILanguageRepository, LanguageRepository>();
+    serviceCollection.AddTransient<ITypingTestService, TypingTestService>();
+    serviceCollection.AddTransient<ITextService, TextService>();
+    serviceCollection.AddSingleton<IDatabaseHandler, DatabaseHandler>();
 }
