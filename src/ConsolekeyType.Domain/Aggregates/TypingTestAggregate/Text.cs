@@ -9,6 +9,7 @@ public class Text : ValueObject
     public int WordsCount => Words.Count;
 
     public Language Language { get; }
+    public int Length => ToString().Length;
 
     private Text(List<Word> words, Language language)
     {
@@ -76,4 +77,6 @@ public class Text : ValueObject
         foreach (var word in Words)
             yield return word;
     }
+
+    public char this[int i] => ToString()[i];
 }
