@@ -1,7 +1,7 @@
 namespace ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
 
 //TODO: allow interrupt TypingTest
-public class TypingTest : Entity, IAggregateRoot
+public partial class TypingTest : Entity, IAggregateRoot
 {
     public sealed override long Id { get; protected set; }
     public Text Text { get; }
@@ -13,16 +13,23 @@ public class TypingTest : Entity, IAggregateRoot
     public bool IsRunning { get; private set; }
     public bool IsCompleted { get; private set; }
 
-    /*//CPM and WPM
-    //TODO: implement cpm and wpm
-    private float _cpm;
-    private float _wpm;
+    public char NextChar => _enteredChars.Count > Text.Length ? ' ' : Text[_enteredChars.Count];
 
-    public Maybe<float> CPM => IsCompleted ? _cpm : Maybe<float>.None;
-    public Maybe<float> WPM => IsCompleted ? _wpm : Maybe<float>.None;*/
+    public char CurrentChar
+        => _enteredChars.Count > Text.Length ? ' ' : Text[_enteredChars.Count - 1];
 
-    private IReadOnlyCollection<char> _text;
+    //TODO: implement monkeytype compatible CPM and WPM
+    public Maybe<float> CPM => IsCompleted
+        ? (float)(_correctCharsCounter / Duration.Value.TotalMilliseconds * 1000 * 60)
+        : Maybe<float>.None;
+
+    public Maybe<float> WPM => IsCompleted
+        ? (float)(CPM.Value / Text.Words.Average(w => w.Value.Length))
+        : Maybe<float>.None;
+
     private Stack<char> _enteredChars;
+    private int _correctCharsCounter;
+    private int _incorrectCharsCounter;
 
     public int TotalCharacters { get; }
 
@@ -30,7 +37,6 @@ public class TypingTest : Entity, IAggregateRoot
     {
         Id = id;
         Text = text;
-        _text = text.ToString().ToCharArray();
         _enteredChars = new Stack<char>();
         TotalCharacters = Text.Words.Sum(w => w.Value.Length);
     }
@@ -79,14 +85,21 @@ public class TypingTest : Entity, IAggregateRoot
         return Result.Success(endTime);
     }
 
-    public Result EnterChar(char @char)
+    public Result<EnteredCharStatus> EnterChar(char @char)
     {
         if (!IsRunning)
-            return Result.Failure("Test is not in running phase");
+            return Result.Failure<EnteredCharStatus>("Test is not in running phase");
 
         _enteredChars.Push(@char);
 
-        return Result.Success(@char);
+        if (Text[_enteredChars.Count - 1] == @char)
+        {
+            _correctCharsCounter++;
+            return Result.Success(EnteredCharStatus.Correct);
+        }
+
+        _incorrectCharsCounter++;
+        return Result.Success(EnteredCharStatus.Incorrect);
     }
 
     public Result<char> DeleteLastChar()
@@ -96,6 +109,11 @@ public class TypingTest : Entity, IAggregateRoot
 
         if (!_enteredChars.TryPop(out var @char))
             return Result.Failure<char>("There is no entered chars yet");
+
+        if (@char == Text[_enteredChars.Count])
+            _correctCharsCounter--;
+        else
+            _incorrectCharsCounter--;
 
         return Result.Success(@char);
     }

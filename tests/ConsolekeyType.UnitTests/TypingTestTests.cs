@@ -218,6 +218,34 @@ public class TypingTestTests
         res.Should().Fail();
     }
 
+    [Test]
+    public void Cpm_with_all_correct_letters()
+    {
+        var typingTest = CreateDefaultTypingTest();
+        typingTest.Start(_startTime);
+        // ponchi the dog
+        typingTest.EnterChar('p');
+        typingTest.EnterChar('o');
+        typingTest.EnterChar('n');
+        typingTest.EnterChar('c');
+        typingTest.EnterChar('h');
+        typingTest.EnterChar('i');
+        typingTest.EnterChar(' ');
+        typingTest.EnterChar('t');
+        typingTest.EnterChar('h');
+        typingTest.EnterChar('e');
+        typingTest.EnterChar(' ');
+        typingTest.EnterChar('d');
+        typingTest.EnterChar('o');
+        typingTest.EnterChar('g');
+        typingTest.End(_endTime);
+
+        var actual = typingTest.CPM.Value;
+        var expected = 351.46f;
+
+        Assert.That(actual, Is.EqualTo(expected).Within(0.01f));
+    }
+
     private static TypingTest CreateDefaultTypingTest()
         => TypingTest.Create(CreateDefaultText()).Value;
 
