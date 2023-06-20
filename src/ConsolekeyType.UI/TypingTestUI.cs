@@ -17,89 +17,260 @@ public class TypingTestUI
     public void Run()
     {
         Console.CursorVisible = false;
+        ShowMainWindow();
+        ConsoleHelper.SetCursorMin();
+        ConsoleHelper.Clear();
+    }
 
-        var languages = Language.All.ToList();
-        var selectedLanguageIndex = 0;
+    private const string Title = "ConsolekeyType";
+    private Language _language = Language.English;
+    private int _wordCount = 5;
+    private WindowSection _currentSection = WindowSection.Text;
+    private bool _isTextShouldBeUpdated = true;
+    private Text _text = Text.Create("default", Language.English).Value;
 
-        Console.WriteLine("Choose a language for the test:");
+    private void ShowMainWindow()
+    {
+        Action nextWindow;
 
         while (true)
         {
-            Console.Clear();
+            Console.CursorVisible = _currentSection == WindowSection.Text;
 
-            for (int i = 0; i < languages.Count; i++)
+            UpdateMainWindow(_currentSection);
+
+            var input = Console.ReadKey(true);
+
+            if (_currentSection is WindowSection.Text && input.IsLetter())
             {
-                if (i == selectedLanguageIndex)
-                {
-                    Console.BackgroundColor = ConsoleColor.Blue;
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-
-                Console.WriteLine($"{i + 1}. {languages[i].Name}");
-
-                Console.ResetColor();
-            }
-
-            var key = Console.ReadKey(true);
-
-            if (key.Key == ConsoleKey.UpArrow)
-            {
-                selectedLanguageIndex--;
-
-                if (selectedLanguageIndex < 0)
-                    selectedLanguageIndex = languages.Count - 1;
-            }
-            else if (key.Key == ConsoleKey.DownArrow)
-            {
-                selectedLanguageIndex++;
-
-                if (selectedLanguageIndex >= languages.Count)
-                    selectedLanguageIndex = 0;
-            }
-            else if (key.Key == ConsoleKey.Enter)
-            {
+                nextWindow = () => ShowTestWindow(_text, input);
                 break;
             }
+
+            if (input.Key is ConsoleKey.DownArrow)
+            {
+                if (_currentSection is WindowSection.Text)
+                {
+                    _currentSection = WindowSection.Language;
+                    _isTextShouldBeUpdated = false;
+                }
+                else if (_currentSection is WindowSection.Language)
+                {
+                    var langs = Language.All.ToList();
+                    var curIndex = langs.IndexOf(_language);
+                    var nextIndex = curIndex + 1 == langs.Count ? 0 : curIndex + 1;
+
+                    _language = langs[nextIndex];
+                    _isTextShouldBeUpdated = true;
+                }
+                else if (_currentSection is WindowSection.WordsCount)
+                {
+                    _wordCount = _wordCount == 100 ? 1 : _wordCount + 1;
+                    _isTextShouldBeUpdated = true;
+                }
+            }
+            else if (input.Key is ConsoleKey.UpArrow)
+            {
+                if (_currentSection is WindowSection.Text)
+                {
+                    _currentSection = WindowSection.WordsCount;
+                    _isTextShouldBeUpdated = false;
+                }
+                else if (_currentSection is WindowSection.Language)
+                {
+                    var langs = Language.All.ToList();
+                    var curIndex = langs.IndexOf(_language);
+                    var nextIndex = curIndex - 1 == -1 ? langs.Count - 1 : curIndex - 1;
+
+                    _language = langs[nextIndex];
+                    _isTextShouldBeUpdated = true;
+                }
+                else if (_currentSection is WindowSection.WordsCount)
+                {
+                    _wordCount = _wordCount == 1 ? 100 : _wordCount - 1;
+                    _isTextShouldBeUpdated = true;
+                }
+            }
+            else if (input.Key is ConsoleKey.RightArrow)
+            {
+                if (_currentSection is WindowSection.Text)
+                    _currentSection = WindowSection.WordsCount;
+                else if (_currentSection is WindowSection.Language)
+                    _currentSection = WindowSection.WordsCount;
+                else if (_currentSection is WindowSection.WordsCount)
+                    _currentSection = WindowSection.Text;
+
+                _isTextShouldBeUpdated = false;
+            }
+            else if (input.Key is ConsoleKey.LeftArrow)
+            {
+                if (_currentSection is WindowSection.Text)
+                    _currentSection = WindowSection.Language;
+                else if (_currentSection is WindowSection.Language)
+                    _currentSection = WindowSection.Text;
+                else if (_currentSection is WindowSection.WordsCount)
+                    _currentSection = WindowSection.Language;
+
+                _isTextShouldBeUpdated = false;
+            }
+            else if (input.Key is ConsoleKey.Enter or ConsoleKey.Escape)
+            {
+                _currentSection = WindowSection.Text;
+                _isTextShouldBeUpdated = false;
+            }
+
+            ConsoleHelper.SetCursorMin();
         }
 
-        var selectedLanguage = languages[selectedLanguageIndex];
+        nextWindow.Invoke();
+    }
 
-        Console.WriteLine("Enter the number of words for the test:");
-        var numWords = int.Parse(Console.ReadLine());
-
-        var text = _textService.GenerateText(numWords, selectedLanguage);
+    private void ShowTestWindow(Text text, ConsoleKeyInfo input)
+    {
+        var start = Console.GetCursorPosition();
 
         _typingTestService.StartTest(text);
 
+        var enterCharResult = _typingTestService.EnterCharacter(input.KeyChar).Value;
+
+        ConsoleHelper.WriteWithColor(
+            _typingTestService.TypingTest.CurrentChar.ToString(),
+            enterCharResult == EnteredCharStatus.Correct
+                ? new Color(64, 255, 64)
+                : new Color(255, 64, 128)
+        );
+
         while (true)
         {
-            Console.Clear();
-            Console.WriteLine("Type the following text:");
-            Console.WriteLine(_typingTestService.TypingTest.Text);
+            input = Console.ReadKey(true);
 
-            var key = Console.ReadKey(true);
-
-            if (key.Key == ConsoleKey.Backspace)
+            if (input.IsLetter() || input.Key is ConsoleKey.Spacebar)
             {
-                _typingTestService.DeleteCharacter();
+                enterCharResult = _typingTestService.EnterCharacter(input.KeyChar).Value;
+
+                ConsoleHelper.WriteWithColor(
+                    _typingTestService.TypingTest.CurrentChar.ToString(),
+                    enterCharResult == EnteredCharStatus.Correct
+                        ? new Color(64, 255, 64)
+                        : new Color(255, 64, 128)
+                );
             }
-            else if (key.Key == ConsoleKey.Enter)
+
+            if (input.Key is ConsoleKey.Backspace)
+                if (Console.GetCursorPosition().Left > start.Left)
+                {
+                    _typingTestService.DeleteCharacter();
+                    var cur = Console.GetCursorPosition();
+
+                    Console.SetCursorPosition(cur.Left - 1, cur.Top);
+                    Console.Write(_typingTestService.TypingTest.NextChar);
+                    Console.SetCursorPosition(cur.Left - 1, cur.Top);
+                }
+
+            if (input.Key is ConsoleKey.Enter)
             {
                 _typingTestService.EndTest();
-                Console.WriteLine("Test complete!");
                 break;
             }
-            else
-            {
-                _typingTestService.EnterCharacter(key.KeyChar);
-            }
         }
+    }
+
+    private void UpdateMainWindow(WindowSection currentSection)
+    {
+        ConsoleHelper.Clear();
+        ConsoleHelper.SetCursorCenterWithOffset(-Title.Length / 2, -5);
+
+        ConsoleHelper.WriteWithColor(Title, new Color(64, 128, 255));
+        var textStart = UpdateTextSection();
+        UpdateLanguageSection(currentSection);
+        UpdateWordCountSection(currentSection);
+
+        if (currentSection == WindowSection.Text)
+        {
+            Console.CursorVisible = true;
+            ConsoleHelper.SetCursorCenterWithOffset(textStart, 0);
+        }
+    }
+
+    private int UpdateTextSection()
+    {
+        var textStart = -_text.ToString().Length / 2;
+        if (_language == Language.Chinese || _language == Language.Japanese)
+            textStart *= 2;
+
+        if (_isTextShouldBeUpdated)
+        {
+            _text = _textService.GenerateText(_wordCount, _language);
+            textStart = -_text.ToString().Length / 2;
+            if (_language == Language.Chinese || _language == Language.Japanese)
+                textStart *= 2;
+
+            ConsoleHelper.SetCursorCenterWithOffset(-Console.WindowWidth / 2, 0);
+            Console.Write(string.Concat(Enumerable.Repeat(" ", Console.WindowWidth)));
+
+            ConsoleHelper.SetCursorCenterWithOffset(textStart, 0);
+            Console.Write(_text);
+        }
+
+        return textStart;
+    }
+
+    private void UpdateLanguageSection(WindowSection currentSection)
+    {
+        if (currentSection is WindowSection.Language)
+        {
+            ConsoleHelper.SetCursorCenterWithOffset(-20, 5);
+            ConsoleHelper.PrintScrollableListWithSelection(
+                Language.All,
+                _language,
+                3,
+                new Color(255, 64, 128)
+            );
+        }
+        else
+        {
+            ConsoleHelper.SetCursorCenterWithOffset(-20, 5);
+            ConsoleHelper.PrintScrollableList(Language.All, _language, 3);
+        }
+    }
+
+    private void UpdateWordCountSection(WindowSection currentSection)
+    {
+        var nums = Enumerable.Range(1, 100);
+
+        if (currentSection is WindowSection.WordsCount)
+        {
+            ConsoleHelper.SetCursorCenterWithOffset(20, 5);
+            ConsoleHelper.PrintScrollableListWithSelection(
+                nums,
+                _wordCount,
+                3,
+                new Color(255, 64, 128)
+            );
+        }
+        else
+        {
+            ConsoleHelper.SetCursorCenterWithOffset(20, 5);
+            ConsoleHelper.PrintScrollableList(nums, _wordCount, 3);
+        }
+    }
+
+    private enum WindowSection
+    {
+        Text, Language, WordsCount,
     }
 
     public void ShowApology()
     {
         Console.BackgroundColor = ConsoleColor.Red;
-        Console.WriteLine("SORRY!");
+        Console.WriteLine("We have encountered an error! Sorry!");
         Console.ResetColor();
+        Console.CursorVisible = true;
+    }
+
+    public void FailFast()
+    {
+        ConsoleHelper.SetCursorMin();
+        ConsoleHelper.Clear();
     }
 }

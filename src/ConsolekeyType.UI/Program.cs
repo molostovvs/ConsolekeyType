@@ -25,6 +25,12 @@ var ui = new TypingTestUI(
 
 provider.GetRequiredService<IDatabaseHandler>().Initialize();
 
+Console.CancelKeyPress += delegate
+{
+    ConsoleHelper.SetCursorMin();
+    ConsoleHelper.Clear();
+};
+
 try
 {
     ui.Run();
@@ -32,8 +38,7 @@ try
 catch (Exception)
 {
     ui.ShowApology();
-    throw;
-    //ui.FailFast();
+    ui.FailFast();
 }
 
 void ConfigureServices(IServiceCollection serviceCollection, IConfiguration configuration)

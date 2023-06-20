@@ -1,4 +1,5 @@
 using ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
+using CSharpFunctionalExtensions;
 
 namespace ConsolekeyType.Application;
 
@@ -8,6 +9,6 @@ public interface ITypingTestService
     public void StartTest(Text text);
     public void AbortTest();
     public void EndTest();
-    public void EnterCharacter(char character);
+    public Result<EnteredCharStatus> EnterCharacter(char character);
     public void DeleteCharacter();
 }
