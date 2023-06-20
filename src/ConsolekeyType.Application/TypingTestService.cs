@@ -1,4 +1,3 @@
-using System.ComponentModel.Design;
 using ConsolekeyType.Domain.Aggregates.TypingTestAggregate;
 using CSharpFunctionalExtensions;
 
@@ -42,12 +41,14 @@ public class TypingTestService : ITypingTestService
             throw new Exception(); //TODO: check previous todo
     }
 
-    public void EnterCharacter(char character)
+    public Result<EnteredCharStatus> EnterCharacter(char character)
     {
-        var (_, isFailure, _) = TypingTest.EnterChar(character);
+        var (_, isFailure, value) = TypingTest.EnterChar(character);
 
         if (isFailure)
             throw new Exception(); //TODO: check previous todo
+
+        return value;
     }
 
     public void DeleteCharacter()
