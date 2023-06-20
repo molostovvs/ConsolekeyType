@@ -18,20 +18,26 @@ public partial class TypingTest : Entity, IAggregateRoot
     public char CurrentChar
         => _enteredChars.Count > Text.Length ? ' ' : Text[_enteredChars.Count - 1];
 
+    public int TotalCharacters { get; }
+
+    public Maybe<float> CPM
+    {
+        get => IsCompleted ? _cpm : Maybe<float>.None;
+        private set => _cpm = value;
+    }
+
+    public Maybe<float> WPM
+    {
+        get => IsCompleted ? _wpm : Maybe<float>.None;
+        private set => _wpm = value;
+    }
+
     //TODO: implement monkeytype compatible CPM and WPM
-    public Maybe<float> CPM => IsCompleted
-        ? (float)(_correctCharsCounter / Duration.Value.TotalMilliseconds * 1000 * 60)
-        : Maybe<float>.None;
-
-    public Maybe<float> WPM => IsCompleted
-        ? (float)(CPM.Value / Text.Words.Average(w => w.Value.Length))
-        : Maybe<float>.None;
-
+    private Maybe<float> _cpm;
+    private Maybe<float> _wpm;
     private Stack<char> _enteredChars;
     private int _correctCharsCounter;
     private int _incorrectCharsCounter;
-
-    public int TotalCharacters { get; }
 
     private TypingTest(Text text, long id = default)
     {
@@ -73,14 +79,15 @@ public partial class TypingTest : Entity, IAggregateRoot
 
     public Result End(DateTime endTime)
     {
-        //TODO: Add wpm and cpm calculation
-
         if (!IsRunning || IsCompleted)
             return Result.Failure("The test cannot be completed");
 
         EndTime = endTime;
         IsCompleted = true;
         IsRunning = false;
+
+        SetWPM();
+        SetCPM();
 
         return Result.Success(endTime);
     }
@@ -117,4 +124,10 @@ public partial class TypingTest : Entity, IAggregateRoot
 
         return Result.Success(@char);
     }
+
+    private void SetCPM()
+        => _cpm = (float)(_correctCharsCounter / Duration.Value.TotalMilliseconds * 1000 * 60);
+
+    private void SetWPM()
+        => _wpm = (float)(_correctCharsCounter / Text.Words.Average(w => w.Value.Length));
 }
