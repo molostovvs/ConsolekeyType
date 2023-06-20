@@ -55,6 +55,8 @@ public class TypingTestTests
         retrievedTypingTest.StartTime.Should().Be(savedTypingTest.StartTime);
         retrievedTypingTest.EndTime.Should().Be(savedTypingTest.EndTime);
         retrievedTypingTest.Duration.Value.Should().Be(savedTypingTest.Duration.Value);
+        retrievedTypingTest.CPM.Value.Should().Be(savedTypingTest.CPM.Value);
+        retrievedTypingTest.WPM.Value.Should().Be(savedTypingTest.WPM.Value);
     }
 
     private Result<TypingTest> SaveDefaultTypingTestToDatabase()
@@ -62,6 +64,22 @@ public class TypingTestTests
         var text = Text.Create("ponchi is a fluffy corgi pembroke", Language.English);
         var typingTest = TypingTest.Create(text.Value).Value;
         typingTest.Start(_startTime);
+
+        typingTest.EnterChar('p');
+        typingTest.EnterChar('o');
+        typingTest.EnterChar('n');
+        typingTest.EnterChar('c');
+        typingTest.EnterChar('h');
+        typingTest.EnterChar('i');
+        typingTest.EnterChar(' ');
+        typingTest.EnterChar('t');
+        typingTest.EnterChar('h');
+        typingTest.EnterChar('e');
+        typingTest.EnterChar(' ');
+        typingTest.EnterChar('d');
+        typingTest.EnterChar('o');
+        typingTest.EnterChar('g');
+
         typingTest.End(_endTime);
 
         var repo = new TypingTestRepository(GetOptions());
