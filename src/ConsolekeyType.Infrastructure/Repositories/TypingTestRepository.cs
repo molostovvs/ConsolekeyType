@@ -19,15 +19,17 @@ public class TypingTestRepository : ITypingTestRepository
         using var command = new SQLiteCommand(connection);
         command.CommandText = @"
 insert into typing_tests(
-                        text, language_id, start_time, end_time, duration
+                        text, language_id, start_time, end_time, duration, cpm, wpm
 )
-values (@text, @language_id, @start_time, @end_time, @duration)
+values (@text, @language_id, @start_time, @end_time, @duration, @cpm, @wpm)
 ";
         command.Parameters.AddWithValue("@language_id", typingTest.Text.Language.Id);
         command.Parameters.AddWithValue("@text", typingTest.Text.ToString());
         command.Parameters.AddWithValue("@start_time", typingTest.StartTime);
         command.Parameters.AddWithValue("@end_time", typingTest.EndTime);
         command.Parameters.AddWithValue("@duration", typingTest.Duration.Value);
+        command.Parameters.AddWithValue("@cpm", typingTest.CPM.Value);
+        command.Parameters.AddWithValue("@wpm", typingTest.WPM.Value);
 
         connection.Open();
         var inserted = command.ExecuteNonQuery();
@@ -83,6 +85,7 @@ where id == @id;
         return Map(reader);
     }
 
+    //TODO: use DTO instead of domain object?
     private Maybe<TypingTest> Map(IDataRecord reader)
     {
         var id = (long)reader["id"];
@@ -90,6 +93,8 @@ where id == @id;
         var textFromDb = Text.Create((string)reader["text"], language.Value).Value;
         var startTime = (DateTime)reader["start_time"];
         var endTime = (DateTime)reader["end_time"];
+        var cpm = Convert.ToSingle(reader["cpm"]);
+        var wpm = Convert.ToSingle(reader["wpm"]);
 
         var (_, isFailure, typingTest) = TypingTest.Create(textFromDb, id);
 
@@ -99,6 +104,9 @@ where id == @id;
         typingTest.Start(startTime);
         typingTest.End(endTime);
 
-        return Maybe.From(typingTest);
+        typingTest.GetType().GetProperty("WPM")!.SetValue(typingTest, Maybe<float>.From(wpm));
+        typingTest.GetType().GetProperty("CPM")!.SetValue(typingTest, Maybe<float>.From(cpm));
+
+        return typingTest;
     }
 }
