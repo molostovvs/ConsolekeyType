@@ -2,6 +2,12 @@
 
 ConsolekeyType is a cli application designed to help you practice your typing speed on a keyboard. The application presents you with a series of random words or phrases that you must type as quickly and accurately as possible.
 
+<p align="center">
+  <img src="consolekey_demo.gif" alt="ConsoleKey demo - main view" />
+</p>
+
+Demo was recorded in Alacritty terminal emulator.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
