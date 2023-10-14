@@ -23,16 +23,41 @@ public static class ConsoleHelper
         Console.SetCursorPosition(center.x + x, center.y + y);
     }
 
+    public static void SaveAndRestoreCursorPosition(Action action)
+    {
+        var initialCursorPos = Console.GetCursorPosition();
+
+        action();
+
+        Console.SetCursorPosition(initialCursorPos.Left, initialCursorPos.Top);
+    }
+
     public static void SetCursorMax()
         => Console.SetCursorPosition(Console.WindowWidth, Console.WindowHeight);
 
     public static void Clear()
     {
-        // SetCursorMin();
+        SetCursorMin();
         var height = Console.WindowHeight;
+        var width = Console.WindowWidth;
+
+        var s = new string(' ', width);
 
         for (var i = 0; i < height - 1; i++)
-            Console.WriteLine();
+            Console.WriteLine(s);
+
+        SetCursorMin();
+    }
+
+    public static void PrepareScreen()
+    {
+        var height = Console.WindowHeight;
+        var width = Console.WindowWidth;
+
+        var s = new string(' ', width);
+
+        for (var i = 0; i < height - 1; i++)
+            Console.WriteLine(s);
 
         SetCursorMin();
     }
@@ -58,7 +83,7 @@ public static class ConsoleHelper
     {
         var colorTextBuilder = new StringBuilder();
         colorTextBuilder.Append(TextFormatting.Start);
-        colorTextBuilder.Append(TextFormatting.ColorRGB);
+        colorTextBuilder.Append(TextFormatting.ForegroundRGBStart);
         colorTextBuilder.Append(color.R);
         colorTextBuilder.Append(';');
         colorTextBuilder.Append(color.G);
@@ -70,8 +95,12 @@ public static class ConsoleHelper
     }
 
     public static void PrintScrollableList<T>(IEnumerable<T> items, T defaultSelection,
-        int showCount)
+        int showCount, Color centerItemColor = default)
     {
+        //Equality comparer allow to compare values without boxing
+        if (EqualityComparer<Color>.Default.Equals(centerItemColor, default))
+            centerItemColor = Color.Red;
+
         var orig = Console.GetCursorPosition();
 
         var list = items.ToList();
@@ -97,7 +126,15 @@ public static class ConsoleHelper
             if (index == defaultIndex)
             {
                 itemBuilder.Append(TextFormatting.Start);
-                itemBuilder.Append(TextFormatting.Underline);
+                itemBuilder.Append(TextFormatting.ForegroundRGBStart);
+                itemBuilder.Append(centerItemColor.R);
+                itemBuilder.Append(';');
+                itemBuilder.Append(centerItemColor.G);
+                itemBuilder.Append(';');
+                itemBuilder.Append(centerItemColor.B);
+                itemBuilder.Append(';');
+                itemBuilder.Append(TextFormatting.Bold);
+                itemBuilder.Append('m');
             }
 
             itemBuilder.Append(item);
@@ -141,6 +178,7 @@ public static class ConsoleHelper
                 var sb = GetColorTextBuilder(selectionColor);
                 sb.Append("> ");
                 sb.Append(currentItem);
+                sb.Append(" <");
                 sb.Append(TextFormatting.Reset);
                 Console.SetCursorPosition(currentPos.Left - 2, currentPos.Top);
 
@@ -181,17 +219,19 @@ public static class ConsoleHelper
     private static class TextFormatting
     {
         public const string Start = "\x1b[";
-        public const string ColorRGB = "38;2;";
+        public const string ForegroundRGBStart = "38;2;";
         public const string Reset = "\x1b[0m";
-        public const string Underline = "4m";
+        public const string Underline = "4";
+        public const string Bold = "1";
+        public const string Italic = "3";
     }
 }
 
-public class Color
+public struct Color
 {
-    public byte R { get; set; }
-    public byte G { get; set; }
-    public byte B { get; set; }
+    public byte R { get; }
+    public byte G { get; }
+    public byte B { get; }
 
     public Color(byte r, byte g, byte b)
     {
@@ -199,4 +239,8 @@ public class Color
         G = g;
         B = b;
     }
+
+    public static Color Red = new(255, 64, 128);
+    public static Color Blue = new(64, 128, 255);
+    public static Color Green = new(64, 255, 64);
 }

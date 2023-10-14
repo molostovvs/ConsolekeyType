@@ -11,4 +11,5 @@ public interface ITypingTestService
     public void EndTest();
     public Result<EnteredCharStatus> EnterCharacter(char character);
     public void DeleteCharacter();
+    public IEnumerable<TypingTest> GetLastXTypingTests(int count);
 }

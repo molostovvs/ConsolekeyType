@@ -58,4 +58,14 @@ public class TypingTestService : ITypingTestService
         if (isFailure)
             throw new Exception(); //TODO: check previous todo
     }
+
+    public IEnumerable<TypingTest> GetLastXTypingTests(int count)
+    {
+        var allTestsOrNothing = _repository.GetAll();
+
+        if (allTestsOrNothing.IsSuccess)
+            return allTestsOrNothing.Value.Take(count);
+
+        return Enumerable.Empty<TypingTest>();
+    }
 }

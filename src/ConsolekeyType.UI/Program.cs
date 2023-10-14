@@ -18,12 +18,13 @@ var services = new ServiceCollection();
 ConfigureServices(services, config);
 var provider = services.BuildServiceProvider();
 
+var db = provider.GetRequiredService<IDatabaseHandler>();
+db.Initialize();
+
 var ui = new TypingTestUI(
     provider.GetRequiredService<ITypingTestService>(),
     provider.GetRequiredService<ITextService>()
 );
-
-provider.GetRequiredService<IDatabaseHandler>().Initialize();
 
 Console.CancelKeyPress += delegate
 {
@@ -31,15 +32,15 @@ Console.CancelKeyPress += delegate
     ConsoleHelper.Clear();
 };
 
-try
-{
+// try
+// {
     ui.Run();
-}
-catch (Exception)
-{
-    ui.ShowApology();
-    ui.FailFast();
-}
+// }
+// catch (Exception)
+// {
+//     ui.ShowApology();
+//     ui.FailFast();
+// }
 
 void ConfigureServices(IServiceCollection serviceCollection, IConfiguration configuration)
 {
